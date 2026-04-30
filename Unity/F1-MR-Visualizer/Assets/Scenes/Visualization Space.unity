@@ -194,7 +194,7 @@ LineRenderer:
       m_Curve:
       - serializedVersion: 3
         time: 0
-        value: 1
+        value: 0.011007637
         inSlope: 0
         outSlope: 0
         tangentMode: 0
@@ -377,7 +377,7 @@ Transform:
   m_GameObject: {fileID: 330585543}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0.775, y: 1, z: -2.467}
+  m_LocalPosition: {x: 0, y: 1, z: -2.5}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -819,7 +819,7 @@ MonoBehaviour:
   carPrefab: {fileID: 6230514464333569536, guid: 9bb21d6c1c5ea644d8bb79d26649762e, type: 3}
   carsParent: {fileID: 168808248}
   sessionTimeText: {fileID: 1547406175}
-  worldScale: 0.005
+  worldScale: 0.0001
   isPlaying: 0
   currentTime: 0
 --- !u!4 &1516858727

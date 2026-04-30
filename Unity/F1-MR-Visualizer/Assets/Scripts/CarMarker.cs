@@ -4,10 +4,12 @@ public class CarMarker : MonoBehaviour
 {
     private DriverSessionData driverData;
     private Renderer cachedRenderer;
+    private Vector3 trackCenter;
 
-    public void Initialize(DriverSessionData data)
+    public void Initialize(DriverSessionData data, Vector3 center)
     {
         driverData = data;
+        trackCenter = center;
         cachedRenderer = GetComponentInChildren<Renderer>();
     }
 
@@ -60,7 +62,8 @@ public class CarMarker : MonoBehaviour
 
     private Vector3 ConvertPosition(float x, float y, float z, float scale)
     {
-        return new Vector3(x, z, y) * scale;
+        Vector3 raw = new Vector3(x, z, y);
+        return (raw - trackCenter) * scale;
     }
 
     public string GetDriverCode()

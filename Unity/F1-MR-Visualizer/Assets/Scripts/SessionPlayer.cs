@@ -21,6 +21,7 @@ public class SessionPlayer : MonoBehaviour
 
     private SessionData sessionData;
     private readonly List<CarMarker> carMarkers = new();
+    private Vector3 trackCenter;
     
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -33,6 +34,11 @@ public class SessionPlayer : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if (Input.GetKeyDown(KeyCode.Space))
+        {
+            isPlaying = !isPlaying;
+        }
+
         if (sessionData == null) return;
 
         if (isPlaying)
@@ -75,6 +81,8 @@ public class SessionPlayer : MonoBehaviour
     {
         if (sessionData == null || trackline == null || sessionData.trackPolyline == null)
             return;
+
+        trackCenter = CalculateTrackCenter();
         
         trackline.positionCount = sessionData.trackPolyline.Length;
 
@@ -84,6 +92,8 @@ public class SessionPlayer : MonoBehaviour
             Vector3 pos = ConvertPosition(p.x, p.y, p.z);
             trackline.SetPosition(i, pos);
         }
+
+        Debug.Log($"Track points: {sessionData.trackPolyline.Length}");
     }
 
 
@@ -97,14 +107,29 @@ public class SessionPlayer : MonoBehaviour
             go.name = driver.driverCode;
 
             CarMarker marker = go.GetComponent<CarMarker>();
-            marker.Initialize(driver);
+            marker.Initialize(driver, trackCenter);
             carMarkers.Add(marker);
         }
+
+        Debug.Log($"Spawned cars: {carMarkers.Count}");
     }
 
     private Vector3 ConvertPosition(float x, float y, float z)
     {
+        Vector3 raw = new Vector3(x, z, y);
         // Temporary mapping - may need adjustment after inspecting data orientation
-        return new Vector3(x, z, y) * worldScale;
+        return (raw - trackCenter) * worldScale;
+    }
+
+    private Vector3 CalculateTrackCenter()
+    {
+        Vector3 sum = Vector3.zero;
+
+        foreach (var p in sessionData.trackPolyline)
+        {
+            sum += new Vector3(p.x, p.z, p.y);
+        }
+
+        return sum / sessionData.trackPolyline.Length;
     }
 }
