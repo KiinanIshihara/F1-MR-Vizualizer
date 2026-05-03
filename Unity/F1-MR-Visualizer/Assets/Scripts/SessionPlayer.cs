@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
@@ -19,6 +20,10 @@ public class SessionPlayer : MonoBehaviour
     public bool isPlaying = true;
     public float currentTime = 0f;
 
+    public float playbackSpeed = 1f;
+    private readonly float[] speedOptions = { 0.5f, 1f, 1.5f, 2f };
+    private int speedIndex = 1;
+
     private SessionData sessionData;
     private readonly List<CarMarker> carMarkers = new();
     private Vector3 trackCenter;
@@ -34,16 +39,14 @@ public class SessionPlayer : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Space))
-        {
-            isPlaying = !isPlaying;
-        }
+        HandleKeyboardInput();
+
 
         if (sessionData == null) return;
 
         if (isPlaying)
         {
-            currentTime += Time.deltaTime;
+            currentTime += Time.deltaTime * playbackSpeed;
             if (currentTime > sessionData.durationSeconds)
             currentTime = 0f;
         }
@@ -60,6 +63,31 @@ public class SessionPlayer : MonoBehaviour
     public void Play() => isPlaying = true;
     public void Pause() => isPlaying = false;
 
+    
+    private void HandleKeyboardInput()
+    {
+        if (Input.GetKeyDown(KeyCode.Space))
+        {
+            TogglePlayPause();
+        }
+
+        if (Input.GetKeyDown(KeyCode.R))
+        {
+            Restart();
+        }
+
+        if (Input.GetKeyDown(KeyCode.Equals) || Input.GetKeyDown(KeyCode.Plus))
+        {
+            IncreasePlaybackSpeed();
+        }
+
+        if (Input.GetKeyDown(KeyCode.Minus))
+        {
+            DecreasePlaybackSpeed();
+        }
+
+    }
+    
     private void LoadSession()
     {
         TextAsset jsonAsset = Resources.Load<TextAsset>(resourceFileName);
@@ -131,5 +159,31 @@ public class SessionPlayer : MonoBehaviour
         }
 
         return sum / sessionData.trackPolyline.Length;
+    }
+
+
+    public void IncreasePlaybackSpeed()
+    {
+        speedIndex = Mathf.Min(speedIndex + 1, speedOptions.Length - 1);
+        playbackSpeed = speedOptions[speedIndex];
+    }
+
+    
+    public void DecreasePlaybackSpeed()
+    {
+        speedIndex = Math.Max(speedIndex - 1, 0);
+        playbackSpeed = speedOptions[speedIndex];
+    }
+
+
+    public void Restart()
+    {
+        currentTime = 0f;
+    }
+
+
+    public void TogglePlayPause()
+    {
+        isPlaying = !isPlaying;
     }
 }
