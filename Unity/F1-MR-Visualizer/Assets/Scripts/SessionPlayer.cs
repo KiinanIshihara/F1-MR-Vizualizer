@@ -13,7 +13,7 @@ public class SessionPlayer : MonoBehaviour
     public LineRenderer trackline;
     public GameObject carPrefab;
     public Transform carsParent;
-    public TextMeshProUGUI sessionTimeText;
+    public TextMeshProUGUI sessionInfoText;
 
     [Header("Playback")]
     public float worldScale = 0.01f;
@@ -56,8 +56,7 @@ public class SessionPlayer : MonoBehaviour
             marker.UpdatePose(currentTime, worldScale);
         }
 
-        if (sessionTimeText != null) 
-            sessionTimeText.text = $"t = {currentTime:F1}s";
+        UpdateSessionUI();
     }
 
     public void Play() => isPlaying = true;
@@ -185,5 +184,29 @@ public class SessionPlayer : MonoBehaviour
     public void TogglePlayPause()
     {
         isPlaying = !isPlaying;
+    }
+
+
+    public void UpdateSessionUI()
+    {
+        if (sessionInfoText == null || sessionData == null)
+        {
+            Debug.Log("sessionInfoText or sessionData is Null");
+            return;
+        }
+
+        string status = isPlaying ? "Playing" : "Paused";
+
+        sessionInfoText.text = 
+            $"Session: {sessionData.sessionName}\n" +
+            $"Track: {sessionData.trackName}\n" +
+            $"Time: {currentTime:F1}s / {sessionData.durationSeconds:F1}\n" +
+            $"Status: {status}\n" +
+            $"Speed: {playbackSpeed}x\n\n" +
+            $"Controls:\n" +
+            $"Space = Play/Pause\n" +
+            $"R = Restart\n" +
+            $"+ / - = Playback Speed";
+        
     }
 }
