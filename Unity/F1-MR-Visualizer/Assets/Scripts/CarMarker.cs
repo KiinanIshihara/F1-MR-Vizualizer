@@ -6,6 +6,12 @@ public class CarMarker : MonoBehaviour
     private Renderer cachedRenderer;
     private Vector3 trackCenter;
 
+    public float CurrentSpeed { get; private set; }
+    public string DriverCode => driverData != null ? driverData.driverCode : "";
+    public string FullName => driverData != null ? driverData.fullName : "";
+    public string TeamName => driverData != null ? driverData.teamName : "";
+
+
     public void Initialize(DriverSessionData data, Vector3 center)
     {
         driverData = data;
@@ -45,6 +51,7 @@ public class CarMarker : MonoBehaviour
                 Vector3 pb = ConvertPosition(b.x, b.y, b.z, scale);
 
                 transform.position = Vector3.Lerp(pa, pb, u);
+                CurrentSpeed = Mathf.Lerp(a.speed, b.speed, u);
 
                 Vector3 forward = (pb - pa).normalized;
                 if (forward.sqrMagnitude > 0.0001f)
@@ -58,6 +65,7 @@ public class CarMarker : MonoBehaviour
     private void ApplySample(CarSampleData s, float scale)
     {
         transform.position = ConvertPosition(s.x, s.y, s.z, scale);
+        CurrentSpeed = s.speed;
     }
 
     private Vector3 ConvertPosition(float x, float y, float z, float scale)

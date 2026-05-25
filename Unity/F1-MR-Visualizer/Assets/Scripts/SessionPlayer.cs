@@ -14,6 +14,9 @@ public class SessionPlayer : MonoBehaviour
     public GameObject carPrefab;
     public Transform carsParent;
     public TextMeshProUGUI sessionInfoText;
+    public TextMeshProUGUI selectedCarText;
+    private CarMarker selectedCar;
+
 
     [Header("Playback")]
     public float worldScale = 0.01f;
@@ -21,6 +24,7 @@ public class SessionPlayer : MonoBehaviour
     public float currentTime = 0f;
 
     public float playbackSpeed = 1f;
+    
     private readonly float[] speedOptions = { 0.5f, 1f, 1.5f, 2f };
     private int speedIndex = 1;
 
@@ -40,6 +44,7 @@ public class SessionPlayer : MonoBehaviour
     void Update()
     {
         HandleKeyboardInput();
+        HandleCarSelection();
 
 
         if (sessionData == null) return;
@@ -57,6 +62,7 @@ public class SessionPlayer : MonoBehaviour
         }
 
         UpdateSessionUI();
+        UpdateSelectedCarUI();
     }
 
     public void Play() => isPlaying = true;
@@ -85,6 +91,25 @@ public class SessionPlayer : MonoBehaviour
             DecreasePlaybackSpeed();
         }
 
+    }
+
+
+    private void HandleCarSelection()
+    {
+        if (!Input.GetMouseButtonDown(0)) return;
+
+        Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+
+        if (Physics.Raycast(ray, out RaycastHit hit))
+        {
+            CarMarker marker = hit.collider.GetComponentInParent<CarMarker>();
+
+            if (marker != null)
+            {
+                selectedCar = marker;
+                UpdateSelectedCarUI();
+            }
+        }
     }
     
     private void LoadSession()
@@ -208,5 +233,22 @@ public class SessionPlayer : MonoBehaviour
             $"R = Restart\n" +
             $"+ / - = Playback Speed";
         
+    }
+
+    private void UpdateSelectedCarUI()
+    {
+        if (selectedCarText == null) return;
+
+        if (selectedCar == null)
+        {
+            selectedCarText.text = "Selected Car: None";
+            return;
+        }
+
+        selectedCarText.text =
+            $"Driver: {selectedCar.DriverCode}\n" +
+            $"Name: {selectedCar.FullName}\n" +
+            $"Team: {selectedCar.TeamName}\n" +
+            $"Speed: {selectedCar.CurrentSpeed:F0} km/h";
     }
 }
