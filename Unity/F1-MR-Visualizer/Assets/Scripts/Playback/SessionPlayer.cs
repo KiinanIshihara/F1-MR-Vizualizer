@@ -10,7 +10,8 @@ public class SessionPlayer : MonoBehaviour
     public string resourceFileName = "spa_2023_q";
 
     [Header("Scene References")]
-    public LineRenderer trackline;
+    public TrackMeshGenerator trackMeshGenerator;
+    public LineRenderer trackLine;
     public GameObject carPrefab;
     public Transform carsParent;
     public TextMeshProUGUI sessionInfoText;
@@ -129,7 +130,7 @@ public class SessionPlayer : MonoBehaviour
             Debug.Log($"Loaded session: {sessionData.sessionName}");
     }
 
-    private void BuildTrack()
+    /**private void BuildTrack()
     {
         if (sessionData == null || trackline == null || sessionData.trackPolyline == null)
             return;
@@ -147,6 +148,43 @@ public class SessionPlayer : MonoBehaviour
 
         Debug.Log($"Track points: {sessionData.trackPolyline.Length}");
     }
+    **/
+
+    private void BuildTrack()
+{
+    if (sessionData == null || sessionData.trackPolyline == null)
+        return;
+
+    trackCenter = CalculateTrackCenter();
+
+    Vector3[] convertedPoints = new Vector3[sessionData.trackPolyline.Length];
+
+    for (int i = 0; i < sessionData.trackPolyline.Length; i++)
+    {
+        var p = sessionData.trackPolyline[i];
+        convertedPoints[i] = ConvertPosition(p.x, p.y, p.z);
+    }
+
+    // Keep the old LineRenderer as a debug reference.
+    if (trackLine != null)
+    {
+        trackLine.positionCount = convertedPoints.Length;
+
+        for (int i = 0; i < convertedPoints.Length; i++)
+        {
+            trackLine.SetPosition(i, convertedPoints[i]);
+        }
+    }
+
+    // New procedural track ribbon.
+    if (trackMeshGenerator != null)
+    {
+        trackMeshGenerator.GenerateTrackMesh(convertedPoints);
+    }
+
+    Debug.Log($"Track points: {sessionData.trackPolyline.Length}");
+    Debug.Log($"Track center: {trackCenter}");
+}
 
 
     private void SpawnCars()
