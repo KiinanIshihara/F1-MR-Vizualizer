@@ -5320,7 +5320,9 @@
       "driverCode": "VER",
       "fullName": "Max Verstappen",
       "teamName": "Red Bull Racing",
-      "colorHex": "#FFFFFF",
+      "colorHex": "#0600ef",
+      "driverNumber": "1",
+      "fastestLapSeconds": 106.168,
       "samples": [
         {
           "t": 0.0,
@@ -12762,7 +12764,9 @@
       "driverCode": "LEC",
       "fullName": "Charles Leclerc",
       "teamName": "Ferrari",
-      "colorHex": "#FFFFFF",
+      "colorHex": "#da291c",
+      "driverNumber": "16",
+      "fastestLapSeconds": 106.988,
       "samples": [
         {
           "t": 0.0,
@@ -20260,7 +20264,9 @@
       "driverCode": "PER",
       "fullName": "Sergio Perez",
       "teamName": "Red Bull Racing",
-      "colorHex": "#FFFFFF",
+      "colorHex": "#0600ef",
+      "driverNumber": "11",
+      "fastestLapSeconds": 107.045,
       "samples": [
         {
           "t": 0.0,
@@ -27765,7 +27771,9 @@
       "driverCode": "HAM",
       "fullName": "Lewis Hamilton",
       "teamName": "Mercedes",
-      "colorHex": "#FFFFFF",
+      "colorHex": "#00f5d0",
+      "driverNumber": "44",
+      "fastestLapSeconds": 107.087,
       "samples": [
         {
           "t": 0.0,
@@ -35270,7 +35278,9 @@
       "driverCode": "SAI",
       "fullName": "Carlos Sainz",
       "teamName": "Ferrari",
-      "colorHex": "#FFFFFF",
+      "colorHex": "#da291c",
+      "driverNumber": "55",
+      "fastestLapSeconds": 107.152,
       "samples": [
         {
           "t": 0.0,
@@ -42782,7 +42792,9 @@
       "driverCode": "PIA",
       "fullName": "Oscar Piastri",
       "teamName": "McLaren",
-      "colorHex": "#FFFFFF",
+      "colorHex": "#ff8000",
+      "driverNumber": "81",
+      "fastestLapSeconds": 107.365,
       "samples": [
         {
           "t": 0.0,
@@ -50308,7 +50320,9 @@
       "driverCode": "NOR",
       "fullName": "Lando Norris",
       "teamName": "McLaren",
-      "colorHex": "#FFFFFF",
+      "colorHex": "#ff8000",
+      "driverNumber": "4",
+      "fastestLapSeconds": 107.669,
       "samples": [
         {
           "t": 0.0,
@@ -57855,7 +57869,9 @@
       "driverCode": "RUS",
       "fullName": "George Russell",
       "teamName": "Mercedes",
-      "colorHex": "#FFFFFF",
+      "colorHex": "#00f5d0",
+      "driverNumber": "63",
+      "fastestLapSeconds": 107.805,
       "samples": [
         {
           "t": 0.0,
@@ -65416,7 +65432,9 @@
       "driverCode": "ALO",
       "fullName": "Fernando Alonso",
       "teamName": "Aston Martin",
-      "colorHex": "#FFFFFF",
+      "colorHex": "#00665e",
+      "driverNumber": "14",
+      "fastestLapSeconds": 107.843,
       "samples": [
         {
           "t": 0.0,
@@ -72977,7 +72995,9 @@
       "driverCode": "STR",
       "fullName": "Lance Stroll",
       "teamName": "Aston Martin",
-      "colorHex": "#FFFFFF",
+      "colorHex": "#00665e",
+      "driverNumber": "18",
+      "fastestLapSeconds": 108.841,
       "samples": [
         {
           "t": 0.0,
@@ -80608,7 +80628,9 @@
       "driverCode": "TSU",
       "fullName": "Yuki Tsunoda",
       "teamName": "AlphaTauri",
-      "colorHex": "#FFFFFF",
+      "colorHex": "#2b4562",
+      "driverNumber": "22",
+      "fastestLapSeconds": 113.148,
       "samples": [
         {
           "t": 0.0,
@@ -88540,7 +88562,9 @@
       "driverCode": "GAS",
       "fullName": "Pierre Gasly",
       "teamName": "Alpine",
-      "colorHex": "#FFFFFF",
+      "colorHex": "#fe86bc",
+      "driverNumber": "10",
+      "fastestLapSeconds": 113.671,
       "samples": [
         {
           "t": 0.0,
@@ -96507,7 +96531,9 @@
       "driverCode": "MAG",
       "fullName": "Kevin Magnussen",
       "teamName": "Haas F1 Team",
-      "colorHex": "#FFFFFF",
+      "colorHex": "#b6babd",
+      "driverNumber": "20",
+      "fastestLapSeconds": 114.16,
       "samples": [
         {
           "t": 0.0,
@@ -104509,7 +104535,9 @@
       "driverCode": "BOT",
       "fullName": "Valtteri Bottas",
       "teamName": "Alfa Romeo",
-      "colorHex": "#FFFFFF",
+      "colorHex": "#900000",
+      "driverNumber": "77",
+      "fastestLapSeconds": 114.694,
       "samples": [
         {
           "t": 0.0,
@@ -112546,7 +112574,9 @@
       "driverCode": "OCO",
       "fullName": "Esteban Ocon",
       "teamName": "Alpine",
-      "colorHex": "#FFFFFF",
+      "colorHex": "#fe86bc",
+      "driverNumber": "31",
+      "fastestLapSeconds": 116.372,
       "samples": [
         {
           "t": 0.0,
@@ -120702,7 +120732,9 @@
       "driverCode": "ALB",
       "fullName": "Alexander Albon",
       "teamName": "Williams",
-      "colorHex": "#FFFFFF",
+      "colorHex": "#00a0dd",
+      "driverNumber": "23",
+      "fastestLapSeconds": 120.314,
       "samples": [
         {
           "t": 0.0,
@@ -129138,7 +129170,9 @@
       "driverCode": "ZHO",
       "fullName": "Guanyu Zhou",
       "teamName": "Alfa Romeo",
-      "colorHex": "#FFFFFF",
+      "colorHex": "#900000",
+      "driverNumber": "24",
+      "fastestLapSeconds": 120.832,
       "samples": [
         {
           "t": 0.0,
@@ -137609,7 +137643,9 @@
       "driverCode": "SAR",
       "fullName": "Logan Sargeant",
       "teamName": "Williams",
-      "colorHex": "#FFFFFF",
+      "colorHex": "#00a0dd",
+      "driverNumber": "2",
+      "fastestLapSeconds": 121.535,
       "samples": [
         {
           "t": 0.0,
@@ -146129,7 +146165,9 @@
       "driverCode": "RIC",
       "fullName": "Daniel Ricciardo",
       "teamName": "AlphaTauri",
-      "colorHex": "#FFFFFF",
+      "colorHex": "#2b4562",
+      "driverNumber": "3",
+      "fastestLapSeconds": 122.159,
       "samples": [
         {
           "t": 0.0,
@@ -154691,7 +154729,9 @@
       "driverCode": "HUL",
       "fullName": "Nico Hulkenberg",
       "teamName": "Haas F1 Team",
-      "colorHex": "#FFFFFF",
+      "colorHex": "#b6babd",
+      "driverNumber": "27",
+      "fastestLapSeconds": 123.166,
       "samples": [
         {
           "t": 0.0,

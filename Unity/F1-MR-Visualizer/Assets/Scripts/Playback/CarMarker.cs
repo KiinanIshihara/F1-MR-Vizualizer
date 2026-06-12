@@ -1,5 +1,6 @@
 using UnityEngine;
  using TMPro;
+using System;
 
 public class CarMarker : MonoBehaviour
 {
@@ -12,6 +13,33 @@ public class CarMarker : MonoBehaviour
     public string DriverCode => driverData != null ? driverData.driverCode : "";
     public string FullName => driverData != null ? driverData.fullName : "";
     public string TeamName => driverData != null ? driverData.teamName : "";
+    public string DriverNumber => driverData != null ? driverData.driverNumber : "";
+    public string FastestLap
+    {
+        get
+        {
+            if (driverData == null) return "0:00:000";
+
+            float rawTime = driverData.fastestLapSeconds;
+            float minutes;
+            float seconds;
+            string formattedTime;
+
+            if (rawTime > 60f)
+            {
+                minutes = (float)Math.Floor(rawTime / 60f);
+                seconds = rawTime % 60f;
+            } else
+            {
+                minutes = 0f;
+                seconds = rawTime;
+            }
+
+            formattedTime = minutes.ToString() + ":" + seconds.ToString();
+
+            return formattedTime;
+        }
+    }
 
     [SerializeField] private float heightOffset = 0.08f;
     [SerializeField] private TMP_Text driverLabel;

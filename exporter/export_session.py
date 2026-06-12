@@ -2,13 +2,15 @@ import json
 from pathlib import Path
 
 import fastf1
+import fastf1.plotting
 import numpy as np
 import pandas as pd
 
-OUTPUT_PATH = Path("output/spa_2023_q.json")
+OUTPUT_PATH = Path("../F1-MR-Visualizer/Assets/Resources/spa_2023_q.json")
 OUTPUT_PATH.parent.mkdir(parents=True, exist_ok=True)
 
 fastf1.Cache.enable_cache("../cache_dir")
+fastf1.plotting.setup_mpl(misc_mpl_mods=False)
 
 YEAR = 2023
 GP = "Belgium"
@@ -74,6 +76,18 @@ for _, row in session.results.iterrows():
 
     if fastest is None or fastest.empty:
         continue
+
+    lap_time = fastest["LapTime"]
+    lap_time_seconds = lap_time.total_seconds() if not pd.isna(lap_time) else 0.0
+
+    team_name = row["TeamName"]
+
+    driver_number = str(row["DriverNumber"]) if "DriverNumber" in row else ""
+
+    try:
+        team_color = fastf1.plotting.get_team_color(team_name, session=session)
+    except Exception:
+        team_color = "#FFFFFF"
     
     try:
         samples = resample_driver_lap(fastest, SAMPLE_DT)
@@ -93,11 +107,13 @@ for _, row in session.results.iterrows():
     max_duration = max(max_duration, samples[-1]["t"])
                        
     drivers_out.append({
-        "driverCode": code,
-        "fullName"  : full_name,
-        "teamName"  : team_name,
-        "colorHex"  : "#FFFFFF", # fill later TODO
-        "samples"   : samples
+        "driverCode"        : code,
+        "fullName"          : full_name,
+        "teamName"          : team_name,
+        "colorHex"          : team_color,
+        "driverNumber"      : driver_number,
+        "fastestLapSeconds" : round(float(lap_time_seconds), 3),
+        "samples"           : samples
     })
 
 export_obj = {

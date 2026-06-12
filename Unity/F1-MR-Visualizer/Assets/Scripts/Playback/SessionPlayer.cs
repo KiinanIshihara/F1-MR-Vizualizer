@@ -332,27 +332,14 @@ public class SessionPlayer : MonoBehaviour
         }
 
         selectedCarText.text =
-            $"Driver: {selectedCar.DriverCode}\n" +
+            $"Driver: {selectedCar.DriverCode} #{selectedCar.DriverNumber}\n" +
             $"Name: {selectedCar.FullName}\n" +
             $"Team: {selectedCar.TeamName}\n" +
+            $"Fastest Lap: {selectedCar.FastestLap}\n" +
             $"Speed: {selectedCar.CurrentSpeed:F0} km/h";
     }
 
 
-    /**private void ClearSelectedCarUI()
-    {
-        if (selectedCarText == null) return;
-
-        if (selectedCar == null)
-        {
-            selectedCarText.text = "Selected Car: None";
-            return;
-        }
-        Debug.Log("HEY");
-        selectedCarText.text = "Selected Car: None";
-
-
-    }**/
 
 
     private void FocusSelectedCar()

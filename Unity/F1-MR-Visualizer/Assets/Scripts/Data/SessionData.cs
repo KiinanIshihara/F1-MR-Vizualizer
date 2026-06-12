@@ -27,6 +27,8 @@ public class DriverSessionData
     public string fullName;
     public string teamName;
     public string colorHex;
+    public string driverNumber;
+    public float fastestLapSeconds;
     public CarSampleData[] samples;
 }
 
