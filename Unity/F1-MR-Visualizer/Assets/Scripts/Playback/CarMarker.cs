@@ -1,22 +1,63 @@
 using UnityEngine;
+ using TMPro;
 
 public class CarMarker : MonoBehaviour
 {
     private DriverSessionData driverData;
     private Renderer cachedRenderer;
     private Vector3 trackCenter;
+    private Camera mainCamera;
 
     public float CurrentSpeed { get; private set; }
     public string DriverCode => driverData != null ? driverData.driverCode : "";
     public string FullName => driverData != null ? driverData.fullName : "";
     public string TeamName => driverData != null ? driverData.teamName : "";
 
+    [SerializeField] private float heightOffset = 0.08f;
+    [SerializeField] private TMP_Text driverLabel;
+
+    private Material runtimeMaterial;
+    private Color baseColor = Color.white;
+    private bool isSelected = false;
+    private Vector3 initialCarScale;
 
     public void Initialize(DriverSessionData data, Vector3 center)
     {
         driverData = data;
         trackCenter = center;
         cachedRenderer = GetComponentInChildren<Renderer>();
+        initialCarScale = transform.localScale;
+
+        if (cachedRenderer != null)
+        {
+            runtimeMaterial = new Material(cachedRenderer.material);
+            cachedRenderer.material = runtimeMaterial;
+
+            baseColor = GetTeamColor(driverData.teamName, driverData.colorHex);
+            ApplyBaseColor();
+        }
+
+        mainCamera = Camera.main;
+
+        if (driverLabel != null)
+        {
+            driverLabel.text = data.driverCode;
+        }
+    }
+
+
+    private void LateUpdate()
+    {
+        if (driverLabel == null || mainCamera == null) return;
+
+        Transform labelTransform = driverLabel.transform;
+
+        Vector3 directionToCamera = labelTransform.position - mainCamera.transform.position;
+
+        if (directionToCamera.sqrMagnitude > 0.001f)
+        {
+            labelTransform.rotation = Quaternion.LookRotation(directionToCamera);
+        }
     }
 
     public void UpdatePose(float t, float scale)
@@ -71,7 +112,9 @@ public class CarMarker : MonoBehaviour
     private Vector3 ConvertPosition(float x, float y, float z, float scale)
     {
         Vector3 raw = new Vector3(x, z, y);
-        return (raw - trackCenter) * scale;
+        Vector3 converted = (raw - trackCenter) * scale;
+        converted.y += heightOffset;
+        return converted;
     }
 
     public string GetDriverCode()
@@ -82,5 +125,58 @@ public class CarMarker : MonoBehaviour
     public string GetTeamName()
     {
         return driverData != null ? driverData.teamName : "";
+    }
+
+
+    private Color GetTeamColor(string teamName, string colorHex)
+    {
+        if (!string.IsNullOrEmpty(colorHex) && ColorUtility.TryParseHtmlString(colorHex, out Color parsedColor))
+        {
+            if (parsedColor != Color.white)
+                return parsedColor;
+        }
+
+        string team = teamName.ToLower();
+
+        if (team.Contains("red bull")) return new Color32(71, 129, 215, 255);
+        if (team.Contains("ferrari")) return new Color32(237, 17, 49, 255);
+        if (team.Contains("mercedes")) return new Color32(0, 215, 182, 255);
+        if (team.Contains("mclaren")) return new Color32(244, 118, 0, 255);
+        if (team.Contains("aston")) return new Color32(34, 153, 113, 255);
+        if (team.Contains("alpine")) return new Color32(0, 161, 232, 255);
+        if (team.Contains("williams")) return new Color32(24, 104, 219, 255);
+        if (team.Contains("haas")) return new Color32(156, 159, 162, 255);
+        if (team.Contains("sauber") || team.Contains("kick")) return new Color32(1, 192, 14, 255);
+        if (team.Contains("rb") || team.Contains("bulls") || team.Contains("alpha")) return new Color32(108, 152, 255, 255);
+        if (team.Contains("alfa")) return new Color32(201, 45, 75, 255);
+
+        return Color.white;
+    }
+
+    private void ApplyBaseColor()
+    {
+        if (runtimeMaterial == null) return;
+
+        runtimeMaterial.color = baseColor;
+        driverLabel.color = baseColor;
+    }
+
+
+    public void SetSelected(bool selected)
+    {
+        isSelected = selected;
+
+        if (runtimeMaterial == null) return;
+
+        if (isSelected)
+        {
+            runtimeMaterial.color = Color.yellow;
+            transform.localScale = new Vector3(0.1f, 0.1f,0.1f);
+        }
+        else
+        {
+            runtimeMaterial.color = baseColor;
+            transform.localScale = initialCarScale;
+        }
     }
 }

@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using TMPro;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -20,11 +21,16 @@ public class SessionPlayer : MonoBehaviour
 
 
     [Header("Playback")]
+    
+    [SerializeField] private Camera mainCamera;
     public float worldScale = 0.01f;
     public bool isPlaying = true;
     public float currentTime = 0f;
 
     public float playbackSpeed = 1f;
+
+    private Vector3 initialCameraPos;
+    private Quaternion initialCameraRot;
     
     private readonly float[] speedOptions = { 0.5f, 1f, 1.5f, 2f };
     private int speedIndex = 1;
@@ -36,6 +42,15 @@ public class SessionPlayer : MonoBehaviour
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
+        if (mainCamera == null)
+        {
+            mainCamera = Camera.main;
+        }
+        
+        initialCameraPos = mainCamera.transform.position;
+        initialCameraRot = mainCamera.transform.rotation;
+
+
         LoadSession();
         BuildTrack();
         SpawnCars();
@@ -92,6 +107,18 @@ public class SessionPlayer : MonoBehaviour
             DecreasePlaybackSpeed();
         }
 
+        //TODO Might need to be deleted for XR camera
+        if (Input.GetKeyDown(KeyCode.F))
+        {
+            FocusSelectedCar();
+        }
+
+        //TODO Might need to be deleted for XR camera
+        if (Input.GetKeyDown(KeyCode.C))
+        {
+            ReturnCameraToInitialPos();
+        }
+
     }
 
 
@@ -107,9 +134,30 @@ public class SessionPlayer : MonoBehaviour
 
             if (marker != null)
             {
+                
+                if (selectedCar != null)
+                {
+                    selectedCar.SetSelected(false);
+                }
+
                 selectedCar = marker;
+                selectedCar.SetSelected(true);
+
                 UpdateSelectedCarUI();
             }
+        } else
+        {      
+            if (selectedCar != null)
+            {
+                selectedCar.SetSelected(false);
+            }
+
+            selectedCar = null;
+
+
+            //Debug.Log("clearing ui");
+
+
         }
     }
     
@@ -288,5 +336,40 @@ public class SessionPlayer : MonoBehaviour
             $"Name: {selectedCar.FullName}\n" +
             $"Team: {selectedCar.TeamName}\n" +
             $"Speed: {selectedCar.CurrentSpeed:F0} km/h";
+    }
+
+
+    /**private void ClearSelectedCarUI()
+    {
+        if (selectedCarText == null) return;
+
+        if (selectedCar == null)
+        {
+            selectedCarText.text = "Selected Car: None";
+            return;
+        }
+        Debug.Log("HEY");
+        selectedCarText.text = "Selected Car: None";
+
+
+    }**/
+
+
+    private void FocusSelectedCar()
+    {
+        if (selectedCar == null || mainCamera == null) return;
+
+        Vector3 target = selectedCar.transform.position;
+
+        mainCamera.transform.position = target + new Vector3(0f, 1.5f, -2f);
+        mainCamera.transform.LookAt(target);
+    }
+
+    private void ReturnCameraToInitialPos()
+    {
+        if (mainCamera == null) return;
+
+        mainCamera.transform.position = initialCameraPos;
+        mainCamera.transform.rotation = initialCameraRot;
     }
 }
