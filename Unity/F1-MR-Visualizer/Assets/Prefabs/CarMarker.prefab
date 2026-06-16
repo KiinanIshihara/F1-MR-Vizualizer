@@ -343,3 +343,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::CarMarker
   heightOffset: 0.02
   driverLabel: {fileID: 4605548957828170856}
+  highlightShader: {fileID: 2100000, guid: d0d1b84b58f32fb4194c341ef7b9cee2, type: 2}

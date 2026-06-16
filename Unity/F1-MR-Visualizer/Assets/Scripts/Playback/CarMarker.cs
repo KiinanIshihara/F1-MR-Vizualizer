@@ -43,6 +43,7 @@ public class CarMarker : MonoBehaviour
 
     [SerializeField] private float heightOffset = 0.08f;
     [SerializeField] private TMP_Text driverLabel;
+    [SerializeField] private Material highlightShader;
 
     private Material runtimeMaterial;
     private Color baseColor = Color.white;
@@ -198,12 +199,15 @@ public class CarMarker : MonoBehaviour
 
         if (isSelected)
         {
-            runtimeMaterial.color = Color.yellow;
-            transform.localScale = new Vector3(0.1f, 0.1f,0.1f);
+            highlightShader.SetColor("_BaseColor", baseColor);
+            cachedRenderer.material = highlightShader;
+
+            transform.localScale = new Vector3(0.1f, 0.1f, 0.165f);
         }
         else
         {
-            runtimeMaterial.color = baseColor;
+            //runtimeMaterial.color = baseColor;
+            cachedRenderer.material = runtimeMaterial;
             transform.localScale = initialCarScale;
         }
     }
