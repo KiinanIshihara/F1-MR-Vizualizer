@@ -23,6 +23,8 @@ public class SessionPlayer : MonoBehaviour
     [Header("Playback")]
     
     [SerializeField] private Camera mainCamera;
+    [SerializeField] private float startTimeOffset = 0f;
+    [SerializeField] private float globalCarVisibilityStartTime = 1400f;
     public float worldScale = 0.01f;
     public bool isPlaying = true;
     public float currentTime = 0f;
@@ -32,7 +34,7 @@ public class SessionPlayer : MonoBehaviour
     private Vector3 initialCameraPos;
     private Quaternion initialCameraRot;
     
-    private readonly float[] speedOptions = { 0.5f, 1f, 1.5f, 2f };
+    private readonly float[] speedOptions = { 0.5f,1f, 2f, 5f, 10f };
     private int speedIndex = 1;
 
     private SessionData sessionData;
@@ -54,6 +56,8 @@ public class SessionPlayer : MonoBehaviour
         LoadSession();
         BuildTrack();
         SpawnCars();
+
+        currentTime = startTimeOffset;
     }
 
     // Update is called once per frame
@@ -74,8 +78,7 @@ public class SessionPlayer : MonoBehaviour
 
         foreach (var marker in carMarkers)
         {
-            marker.UpdatePose(currentTime, worldScale);
-        }
+            marker.UpdatePose(currentTime, worldScale, currentTime >= globalCarVisibilityStartTime);        }
 
         UpdateSessionUI();
         UpdateSelectedCarUI();
@@ -83,7 +86,6 @@ public class SessionPlayer : MonoBehaviour
 
     public void Play() => isPlaying = true;
     public void Pause() => isPlaying = false;
-
     
     private void HandleKeyboardInput()
     {

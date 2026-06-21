@@ -4,8 +4,9 @@ using System;
 
 public class CarMarker : MonoBehaviour
 {
+    [SerializeField] private Renderer carBodyRenderer;
+    [SerializeField] private Collider carCollider;
     private DriverSessionData driverData;
-    private Renderer cachedRenderer;
     private Vector3 trackCenter;
     private Camera mainCamera;
 
@@ -41,6 +42,8 @@ public class CarMarker : MonoBehaviour
         }
     }
 
+    [SerializeField] private float minVisibleSpeed = 5f;
+    [SerializeField] private float maxInterpolationGap = 1.0f;
     [SerializeField] private float heightOffset = 0.08f;
     [SerializeField] private TMP_Text driverLabel;
     [SerializeField] private Material highlightShader;
@@ -54,13 +57,12 @@ public class CarMarker : MonoBehaviour
     {
         driverData = data;
         trackCenter = center;
-        cachedRenderer = GetComponentInChildren<Renderer>();
         initialCarScale = transform.localScale;
 
-        if (cachedRenderer != null)
+        if (carBodyRenderer != null)
         {
-            runtimeMaterial = new Material(cachedRenderer.material);
-            cachedRenderer.material = runtimeMaterial;
+            runtimeMaterial = new Material(carBodyRenderer.material);
+            carBodyRenderer.material = runtimeMaterial;
 
             baseColor = GetTeamColor(driverData.teamName, driverData.colorHex);
             ApplyBaseColor();
@@ -72,6 +74,8 @@ public class CarMarker : MonoBehaviour
         {
             driverLabel.text = data.driverCode;
         }
+
+        SetVisible(false);
     }
 
 
@@ -89,12 +93,27 @@ public class CarMarker : MonoBehaviour
         }
     }
 
-    public void UpdatePose(float t, float scale)
-    {
+    public void UpdatePose(float t, float scale, bool allowVisibility)    {
         if (driverData == null || driverData.samples == null || driverData.samples.Length == 0)
             return;
 
+        if (!allowVisibility)
+        {
+            SetVisible(false);
+            return;
+        }
+
         var samples = driverData.samples;
+
+
+        if (t < samples[0].t || t > samples[samples.Length - 1].t)
+        {
+            SetVisible(false);
+            return;
+        }
+
+        SetVisible(true);
+
 
         if (t <= samples[0].t)
         {
@@ -115,6 +134,16 @@ public class CarMarker : MonoBehaviour
 
             if (t >= a.t && t <= b.t)
             {
+                float gap = b.t - a.t;
+
+                if (gap > maxInterpolationGap)
+                {
+                    SetVisible(false);
+                    return;
+                }
+
+                SetVisible(true);
+                
                 float u = Mathf.InverseLerp(a.t, b.t, t);
 
                 Vector3 pa = ConvertPosition(a.x, a.y, a.z, scale);
@@ -122,6 +151,14 @@ public class CarMarker : MonoBehaviour
 
                 transform.position = Vector3.Lerp(pa, pb, u);
                 CurrentSpeed = Mathf.Lerp(a.speed, b.speed, u);
+
+                if (CurrentSpeed < minVisibleSpeed)
+                {
+                    SetVisible(false);
+                    return;
+                }
+
+                SetVisible(true);
 
                 Vector3 forward = (pb - pa).normalized;
                 if (forward.sqrMagnitude > 0.0001f)
@@ -145,6 +182,19 @@ public class CarMarker : MonoBehaviour
         converted.y += heightOffset;
         return converted;
     }
+
+
+    private void SetVisible(bool visible)
+{
+    if (carBodyRenderer != null)
+        carBodyRenderer.enabled = visible;
+
+    if (driverLabel != null)
+        driverLabel.gameObject.SetActive(visible);
+
+    if (carCollider != null)
+        carCollider.enabled = visible;
+}
 
     public string GetDriverCode()
     {
@@ -200,14 +250,14 @@ public class CarMarker : MonoBehaviour
         if (isSelected)
         {
             highlightShader.SetColor("_BaseColor", baseColor);
-            cachedRenderer.material = highlightShader;
+            carBodyRenderer.material = highlightShader;
 
             transform.localScale = new Vector3(0.1f, 0.1f, 0.165f);
         }
         else
-        {
+        {   
             //runtimeMaterial.color = baseColor;
-            cachedRenderer.material = runtimeMaterial;
+            carBodyRenderer .material = runtimeMaterial;
             transform.localScale = initialCarScale;
         }
     }

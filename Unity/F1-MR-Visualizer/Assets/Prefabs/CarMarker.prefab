@@ -341,6 +341,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 802a891386fc68b4796069fee8514032, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CarMarker
+  carBodyRenderer: {fileID: 707157276748032009}
+  carCollider: {fileID: 6571746648561176733}
+  minVisibleSpeed: 1
+  maxInterpolationGap: 1
   heightOffset: 0.02
   driverLabel: {fileID: 4605548957828170856}
   highlightShader: {fileID: 2100000, guid: d0d1b84b58f32fb4194c341ef7b9cee2, type: 2}

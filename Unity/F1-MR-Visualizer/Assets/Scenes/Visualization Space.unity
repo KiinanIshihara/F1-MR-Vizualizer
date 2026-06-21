@@ -1209,14 +1209,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 22104302380207d4d8dfcc244c73738a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::SessionPlayer
-  resourceFileName: spa_2023_q
+  resourceFileName: spa_2023_q_replay
   trackMeshGenerator: {fileID: 1846282829}
   trackLine: {fileID: 79198852}
   carPrefab: {fileID: 6230514464333569536, guid: 9bb21d6c1c5ea644d8bb79d26649762e, type: 3}
   carsParent: {fileID: 168808248}
   sessionInfoText: {fileID: 2093410463}
   selectedCarText: {fileID: 70890130}
-  mainCamera: {fileID: 0}
+  mainCamera: {fileID: 330585545}
+  startTimeOffset: 1495
+  globalCarVisibilityStartTime: 1500
   worldScale: 0.001
   isPlaying: 0
   currentTime: 0
