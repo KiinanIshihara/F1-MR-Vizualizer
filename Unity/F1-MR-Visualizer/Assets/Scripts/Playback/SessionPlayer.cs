@@ -24,12 +24,18 @@ public class SessionPlayer : MonoBehaviour
     
     [SerializeField] private Camera mainCamera;
     [SerializeField] private float startTimeOffset = 0f;
-    [SerializeField] private float globalCarVisibilityStartTime = 1400f;
+    [SerializeField] private float globalCarVisibilityStartTime = 1400f; //TODO need to find a way to automatically determine when during the playback that the cars actually start the session, 
+    //since the telemetry playback includes idle time before the session officially starts in local time.
+    [SerializeField] private float jumpSeconds = 10f;
     public float worldScale = 0.01f;
     public bool isPlaying = true;
     public float currentTime = 0f;
 
     public float playbackSpeed = 1f;
+
+    [Header("Timeline UI")]
+    [SerializeField] private Slider timelineSlider;
+    private bool isUpdatingSliderFromCode = false;
 
     private Vector3 initialCameraPos;
     private Quaternion initialCameraRot;
@@ -40,6 +46,10 @@ public class SessionPlayer : MonoBehaviour
     private SessionData sessionData;
     private readonly List<CarMarker> carMarkers = new();
     private Vector3 trackCenter;
+
+
+    // UI metadata
+    private string activeWindowText = ""; //TODO  delete later?
     
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -57,7 +67,24 @@ public class SessionPlayer : MonoBehaviour
         BuildTrack();
         SpawnCars();
 
-        currentTime = startTimeOffset;
+        SetupTimelineSlider();    
+
+        if (sessionData.activeEndSeconds > sessionData.activeStartSeconds)
+        {
+            activeWindowText = $"Active Window: {FormatTime(sessionData.activeStartSeconds)} - {FormatTime(sessionData.activeEndSeconds)}\n";
+        }
+
+        //currentTime = startTimeOffset;
+
+        if (startTimeOffset > 0f)
+        {
+            currentTime = startTimeOffset;
+        }
+        else if (sessionData.activeEndSeconds > sessionData.activeStartSeconds)
+        {
+            currentTime = sessionData.activeStartSeconds;
+        }
+
     }
 
     // Update is called once per frame
@@ -82,6 +109,7 @@ public class SessionPlayer : MonoBehaviour
 
         UpdateSessionUI();
         UpdateSelectedCarUI();
+        UpdateTimelineSlider();
     }
 
     public void Play() => isPlaying = true;
@@ -119,6 +147,16 @@ public class SessionPlayer : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.C))
         {
             ReturnCameraToInitialPos();
+        }
+
+        if (Input.GetKeyDown(KeyCode.RightArrow))
+        {
+            JumpTime(jumpSeconds);
+        }
+
+        if (Input.GetKeyDown(KeyCode.LeftArrow))
+        {
+            JumpTime(-jumpSeconds);
         }
 
     }
@@ -274,6 +312,7 @@ public class SessionPlayer : MonoBehaviour
     }
 
 
+    #region PLAYBACK CONTROLS METHODS
     public void IncreasePlaybackSpeed()
     {
         speedIndex = Mathf.Min(speedIndex + 1, speedOptions.Length - 1);
@@ -290,7 +329,16 @@ public class SessionPlayer : MonoBehaviour
 
     public void Restart()
     {
-        currentTime = 0f;
+        //currentTime = 0f; //TODO?
+
+        if (startTimeOffset > 0f)
+        {
+            currentTime = startTimeOffset;
+        }
+        else if (sessionData.activeEndSeconds > sessionData.activeStartSeconds)
+        {
+            currentTime = sessionData.activeStartSeconds;
+        }
     }
 
 
@@ -298,6 +346,63 @@ public class SessionPlayer : MonoBehaviour
     {
         isPlaying = !isPlaying;
     }
+
+    private void SetupTimelineSlider()
+    {
+        if (timelineSlider == null || sessionData == null) return;
+
+        timelineSlider.minValue = 0f;
+        timelineSlider.maxValue = 1f;
+        timelineSlider.wholeNumbers = false;
+
+        Navigation navigation = timelineSlider.navigation;
+        navigation.mode = Navigation.Mode.None;
+        timelineSlider.navigation = navigation;
+
+        timelineSlider.onValueChanged.AddListener(OnTimelineSliderValueChanged);
+    }
+
+    public void OnTimelineSliderValueChanged(float normalizedValue)
+    {
+        if (isUpdatingSliderFromCode) return;
+        if (sessionData == null) return;
+
+        currentTime = Mathf.Lerp(0f, sessionData.durationSeconds, normalizedValue);
+    }
+
+
+    private void UpdateTimelineSlider()
+    {
+        if (timelineSlider == null || sessionData == null) return;
+        if (sessionData.durationSeconds <= 0f) return;
+
+        float normalizedTime = Mathf.InverseLerp(
+            0f,
+            sessionData.durationSeconds,
+            currentTime
+        );
+
+        isUpdatingSliderFromCode = true;
+        timelineSlider.value = normalizedTime;
+        isUpdatingSliderFromCode = false;
+    }
+
+
+    private void JumpTime(float delta)
+    {
+        if (sessionData == null) return;
+
+        currentTime = Mathf.Clamp(
+            currentTime + delta,
+            0f,
+            sessionData.durationSeconds
+        );
+
+        Debug.Log($"Jumping {delta} seconds.\n Current time is: {currentTime} seconds");
+        
+    }
+
+    #endregion
 
 
     public void UpdateSessionUI()
@@ -308,16 +413,21 @@ public class SessionPlayer : MonoBehaviour
             return;
         }
 
+        
+
         string status = isPlaying ? "Playing" : "Paused";
 
         sessionInfoText.text = 
             $"Session: {sessionData.sessionName}\n" +
             $"Track: {sessionData.trackName}\n" +
-            $"Time: {currentTime:F1}s / {sessionData.durationSeconds:F1}\n" +
+            $"Time: {FormatTime(currentTime)} / {FormatTime(sessionData.durationSeconds)}\n" +
+            $"Active Window: {activeWindowText}\n" +
             $"Status: {status}\n" +
+            $"Active Cars: {GetActiveCarCount()} / {carMarkers.Count}\n" +
             $"Speed: {playbackSpeed}x\n\n" +
             $"Controls:\n" +
             $"Space = Play/Pause\n" +
+            $"← / → = Jump 10s\n" +
             $"R = Restart\n" +
             $"+ / - = Playback Speed";
         
@@ -360,5 +470,32 @@ public class SessionPlayer : MonoBehaviour
 
         mainCamera.transform.position = initialCameraPos;
         mainCamera.transform.rotation = initialCameraRot;
+    }
+
+
+    private string FormatTime(float seconds)
+    {
+        int totalSeconds = Mathf.FloorToInt(seconds);
+        int minutes = totalSeconds / 60;
+        int secs = totalSeconds % 60;
+        return $"{minutes:00}:{secs:00}";
+    }
+
+
+    /// <summary>
+    /// Helper method to get the number of active cars / cars currently running on track during session.
+    /// </summary>
+    /// <returns></returns>
+    private int GetActiveCarCount()
+    {
+        int count = 0;
+
+        foreach( var marker in carMarkers)
+        {
+            if (marker != null && marker.IsVisible)
+                count++;
+        }
+
+        return count;
     }
 }

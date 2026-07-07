@@ -251,6 +251,19 @@ for _, row in session.results.iterrows():
         "samples": samples
     })
 
+# Get the active window for each driver
+all_times = []
+
+for driver in drivers_out:
+    samples = driver["samples"]
+    if samples:
+        all_times.append(samples[0]["t"])
+        all_times.append(samples[-1]["t"])
+
+active_start = min(all_times) if all_times else 0.0
+active_end = max(all_times) if all_times else max_duration
+
+
 track_polyline = build_track_polyline()
 
 export_obj = {
@@ -259,7 +272,9 @@ export_obj = {
     "sampleRateHz": int(round(1.0 / SAMPLE_DT)),
     "durationSeconds": round(float(max_duration), 3),
     "trackPolyline": track_polyline,
-    "drivers": drivers_out
+    "drivers": drivers_out,
+    "activeStartSeconds": round(float(active_start), 3),
+    "activeEndSeconds": round(float(active_end), 3),
 }
 
 with open(OUTPUT_PATH, "w", encoding="utf-8") as f:

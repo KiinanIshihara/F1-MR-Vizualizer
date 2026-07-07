@@ -41,5 +41,7 @@ public class SessionData
     public float durationSeconds;
     public Vec3Data[] trackPolyline;
     public DriverSessionData[] drivers;
+    public float activeStartSeconds;
+    public float activeEndSeconds;
     
 }

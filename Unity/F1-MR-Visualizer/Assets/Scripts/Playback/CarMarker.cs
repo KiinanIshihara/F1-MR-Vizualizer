@@ -42,6 +42,8 @@ public class CarMarker : MonoBehaviour
         }
     }
 
+    public bool IsVisible { get; private set;}
+
     [SerializeField] private float minVisibleSpeed = 5f;
     [SerializeField] private float maxInterpolationGap = 1.0f;
     [SerializeField] private float heightOffset = 0.08f;
@@ -185,16 +187,18 @@ public class CarMarker : MonoBehaviour
 
 
     private void SetVisible(bool visible)
-{
-    if (carBodyRenderer != null)
-        carBodyRenderer.enabled = visible;
+    {
+        IsVisible = visible;
+        
+        if (carBodyRenderer != null)
+            carBodyRenderer.enabled = visible;
 
-    if (driverLabel != null)
-        driverLabel.gameObject.SetActive(visible);
+        if (driverLabel != null)
+            driverLabel.gameObject.SetActive(visible);
 
-    if (carCollider != null)
-        carCollider.enabled = visible;
-}
+        if (carCollider != null)
+            carCollider.enabled = visible;
+    }
 
     public string GetDriverCode()
     {
@@ -261,4 +265,30 @@ public class CarMarker : MonoBehaviour
             transform.localScale = initialCarScale;
         }
     }
+
+    #region DEBUG DRIVER ACTIVITY STATE
+    public float FirstSampleTime
+    {
+        get
+        {
+            if (driverData == null || driverData.samples == null || driverData.samples.Length == 0)
+                return 0f;
+
+            return driverData.samples[0].t;
+        }
+    }
+
+    public float LastSampleTime
+    {
+        get
+        {
+            if (driverData == null || driverData.samples == null || driverData.samples.Length == 0)
+                return 0f;
+
+            return driverData.samples[driverData.samples.Length - 1].t;
+        }
+    }
+
+
+    #endregion
 }
